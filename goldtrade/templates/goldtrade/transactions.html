@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+{% block content %}
+<h2>🧾 All Transactions</h2>
+
+{% if transactions %}
+<div class="card mt-3">
+  <div class="card-body">
+    <table class="table table-dark table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>📅 Date</th>
+          <th>Type</th>
+          <th>🥇 Gold (g)</th>
+          <th>💰 Rate (LKR/g)</th>
+          <th>💵 Amount (LKR)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tx in transactions %}
+        <tr>
+          <td>{{ tx.timestamp|date:"d M Y h:i A" }}</td>
+
+          {% if tx.transaction_type == "BUY" %}
+            <td class="text-success fw-bold">BUY</td>
+          {% else %}
+            <td class="text-danger fw-bold">SELL</td>
+          {% endif %}
+
+          <td>{{ tx.gold_amount|floatformat:4 }}</td>
+          <td>Rs. {{ tx.price_per_gram|floatformat:2|intcomma }}</td>
+          <td>Rs. {{ tx.total_amount|floatformat:2|intcomma }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="alert alert-info mt-3" role="alert">
+    You haven't recorded any transactions yet.
+</div>
+{% endif %}
+
+{% endblock %}

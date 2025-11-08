@@ -1,0 +1,37 @@
+from django.urls import path
+from . import views, views_auth  # ✅ import both view files
+
+urlpatterns = [
+    # 🔐 Authentication routes
+    path('login/', views_auth.login_view, name='login'),
+    path('logout/', views_auth.logout_view, name='logout'),
+    path('register/', views_auth.register_view, name='register'),
+
+    # 💰 Core App routes
+    path('', views.dashboard, name='dashboard'),
+    path('update-rate/', views.update_gold_rate, name='update_rate'),
+    path('buy-gold/', views.buy_gold, name='buy_gold'),
+    path('sell-gold/', views.sell_gold, name='sell_gold'),
+    path('transactions/', views.transactions, name='transactions'),
+    path('refresh-rates/', views.refresh_rates, name='refresh_rates'),
+    path('gold-history/', views.gold_price_history, name='gold_history'),
+    path('buy/', views.buy_gold, name='buy_gold'),
+    path('add-money/', views.add_money, name='add_money'),
+    path("staff/deposit/<int:pk>/approve/", approve_deposit, name="approve_deposit"),
+    path("staff/deposit/<int:pk>/reject/", reject_deposit, name="reject_deposit"),
+    path("register/", register_view, name="register"),
+    path('forgot-password/', views_auth.forgot_password, name='forgot_password'),
+    path('reset-confirm/', views_auth.reset_confirm, name='reset_confirm'),
+    path('reset-success/', views_auth.reset_success, name='reset_success'),
+    path('register-success/', views_auth.register_success, name='register_success'),
+    path('verify-email/', views_auth.email_verification_pending, name='email_verification_pending'),
+    path('verify-email/<uidb64>/<token>/', views_auth.verify_email, name='verify_email'),
+    path('resend-verification/', views_auth.resend_verification_email, name='resend_verification'),
+    path('withdraw/', views.withdraw_money, name='withdraw_money'),
+    path('withdraw/confirm/<int:tx_id>/', app_views.withdraw_confirm, name='withdraw_confirm'),
+    # Withdrawals (Admin)
+    path('staff/withdrawals/', app_views.staff_withdrawals, name='staff_withdrawals'),
+    path('staff/withdrawals/<int:pk>/approve/', app_views.approve_withdrawal, name='approve_withdrawal'),
+    path('staff/withdrawals/<int:pk>/reject/', app_views.reject_withdrawal, name='reject_withdrawal'),
+
+]

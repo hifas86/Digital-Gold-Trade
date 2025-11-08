@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Buy Gold - Hifas Jewellery{% endblock %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-warning">Buy Digital Gold</h2>
+        <p class="text-light">Buy and store gold in Sri Lankan Rupees (LKR)</p>
+    </div>
+
+    <div class="card border-0 p-4 shadow-lg"
+         style="background:#10192c; border-radius:12px; border:1px solid #d4af37;">
+
+        <!-- Wallet Boxes -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="p-3 rounded" style="background:#162238; border:1px solid #2b3a50;">
+                    <h6 class="text-uppercase text-secondary mb-1">Cash Balance</h6>
+                    <span class="fw-bold text-warning fs-4">
+                        Rs. {{ wallet.cash_balance|floatformat:2|intcomma }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="p-3 rounded" style="background:#162238; border:1px solid #2b3a50;">
+                    <h6 class="text-uppercase text-secondary mb-1">Gold Balance</h6>
+                    <span class="fw-bold text-warning fs-4">
+                        {{ wallet.gold_balance|floatformat:4 }} g
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rates -->
+        <div class="mb-4 p-3 rounded" style="background:#1e2b42; border:1px solid #d4af37;">
+            <h5 class="text-warning mb-2">Current Market Rate</h5>
+            <p class="text-light mb-0">
+                🟢 Buy Price: <b>Rs. {{ sell_rate|floatformat:2|intcomma }} / g</b><br>
+                🔴 Sell Price: <b>Rs. {{ buy_rate|floatformat:2|intcomma }} / g</b>
+            </p>
+        </div>
+
+        <!-- Form -->
+        <form method="POST">
+            {% csrf_token %}
+
+            <label class="text-light mb-1">Enter Amount (Rs.)</label>
+            <input type="number" step="0.01" name="amount" id="amount"
+                   class="form-control mb-3" required oninput="calcGrams()"
+                   style="background:#0b1220; color:white; border:1px solid #d4af37;">
+
+            <label class="text-light mb-1">Gold You Will Receive (g)</label>
+            <input type="text" id="grams" class="form-control mb-4"
+                   readonly style="background:#0b1220; color:white; border:1px solid #555;">
+
+            <button class="btn w-100 fw-bold"
+                    style="background:#d4af37; color:#000; border-radius:8px;">
+                ✅ Buy Gold
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+function calcGrams() {
+    let amount = parseFloat(document.getElementById('amount').value) || 0;
+    let rate = {{ sell_rate }};
+    let grams = amount / rate;
+
+    if (grams > 0) {
+        document.getElementById('grams').value = grams.toFixed(4);
+    } else {
+        document.getElementById('grams').value = "";
+    }
+}
+</script>
+
+{% endblock %}

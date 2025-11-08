@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Account Created | Digital Gold Trade{% endblock %}
+
+{% block content %}
+<style>
+.verify-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top, #1b2439, #0d1221);
+    animation: bgMove 7s infinite alternate ease-in-out;
+    overflow: hidden;
+}
+@keyframes bgMove {
+    0% {background-position: 0 0;}
+    100% {background-position: 100% 100%;}
+}
+
+/* Glass Card */
+.verify-card {
+    width: 430px;
+    background: rgba(255,255,255,0.1);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 25px rgba(255,215,0,0.15);
+    border: 1px solid rgba(255,215,0,0.3);
+    text-align: center;
+    position: relative;
+}
+
+/* Glowing Logo */
+.logo-img {
+    height:90px;
+    border-radius:12px;
+    animation: glow 2.2s infinite ease-in-out;
+}
+@keyframes glow {
+    0% {filter: drop-shadow(0 0 2px gold);}
+    50% {filter: drop-shadow(0 0 15px gold);}
+    100% {filter: drop-shadow(0 0 2px gold);}
+}
+
+/* Success icon */
+.success-icon {
+    font-size: 65px;
+    color: gold;
+    animation: pop 0.6s ease-in-out;
+}
+@keyframes pop {
+    0% {transform: scale(0);}
+    100% {transform: scale(1);}
+}
+
+/* Button */
+.btn-gold {
+    background: linear-gradient(90deg, #cfa842, #a87a1b);
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: .3s;
+}
+.btn-gold:hover {
+    background: linear-gradient(90deg, #ffce50, #b98a1d);
+    transform: translateY(-2px);
+}
+
+/* Floating sparkle effect */
+.sparkle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: gold;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: sparkleMove 4s linear infinite;
+}
+@keyframes sparkleMove {
+    0% {transform: translateY(0) rotate(0deg);}
+    100% {transform: translateY(600px) rotate(360deg);}
+}
+</style>
+
+<div class="verify-page">
+<div class="verify-card">
+
+    <img src="{% static 'images/hifas_logo.png' %}" class="logo-img mb-3" alt="Hifas Jewellery">
+    <div class="success-icon">🎉</div>
+
+    <h3 class="text-light fw-bold mt-3">Account Created Successfully!</h3>
+    <p style="color:#d9b76e;">
+        Welcome to <b>Hifas Jewellery Digital Gold Trade</b>.<br>
+        Please verify your email address before logging in.
+    </p>
+
+    <a href="{% url 'login' %}" class="btn-gold mt-3 d-inline-block">Go to Login</a>
+
+    <div id="sparkle-container"></div>
+</div>
+</div>
+
+<script>
+// Floating gold sparkles ✨
+const container = document.getElementById('sparkle-container');
+for(let i=0; i<20; i++){
+    let s = document.createElement('div');
+    s.classList.add('sparkle');
+    s.style.left = Math.random() * 100 + '%';
+    s.style.animationDelay = Math.random() * 4 + 's';
+    container.appendChild(s);
+}
+</script>
+{% endblock %}

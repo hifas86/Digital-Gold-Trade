@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}Withdrawal Submitted | Hifas Jewellery{% endblock %}
+
+{% block content %}
+<style>
+  .wcard{background:#10192c;border:1px solid #d4af37;color:#fff;border-radius:14px}
+  .badge-pending{background:#b08828;color:#10192c;font-weight:700}
+  .gold-hl{color:#ffd84d}
+</style>
+
+<div class="wcard p-4 mt-3">
+  <h4 class="mb-2">✅ Withdrawal request submitted</h4>
+  <p class="text-muted mb-3">We’ve received your request and it’s now pending review.</p>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="p-3 border rounded h-100">
+        <div class="d-flex justify-content-between">
+          <span>Status</span>
+          <span class="badge badge-pending">Pending</span>
+        </div>
+        <hr class="border-secondary">
+        <div class="d-flex justify-content-between">
+          <span>Amount</span>
+          <span class="gold-hl">Rs. {{ tx.total_amount|floatformat:2|intcomma }}</span>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span>Created</span>
+          <span class="local-time" data-utc="{{ tx.timestamp|date:'c' }}"></span>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span>Reference</span>
+          <span>#{{ tx.id }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="p-3 border rounded h-100">
+        <h6 class="mb-2">Bank details</h6>
+        <!-- We stored all bank info in tx.remarks, show it as submitted -->
+        <pre class="mb-0" style="white-space:pre-wrap;color:#d9d9d9">{{ tx.remarks }}</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex gap-2">
+    <a href="{% url 'dashboard' %}" class="btn btn-success">Return to Dashboard</a>
+    <a href="{% url 'transactions' %}" class="btn btn-outline-light">View My Transactions</a>
+  </div>
+</div>
+<script>
+document.querySelectorAll('.local-time').forEach(el => {
+  const utc = new Date(el.dataset.utc);
+  el.textContent = utc.toLocaleString(undefined, {
+    year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+});
+</script>
+
+{% endblock %}

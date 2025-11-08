@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Password Reset Successful | Digital Gold Trade{% endblock %}
+
+{% block content %}
+<style>
+.success-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top, #1b2439, #0d1221);
+    animation: bgMove 7s infinite alternate ease-in-out;
+    overflow: hidden;
+}
+@keyframes bgMove {
+    0% {background-position: 0 0;}
+    100% {background-position: 100% 100%;}
+}
+
+/* Glass Card */
+.success-card {
+    width: 420px;
+    background: rgba(255,255,255,0.1);
+    padding: 40px 35px;
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 25px rgba(255,215,0,0.15);
+    border: 1px solid rgba(255,215,0,0.3);
+    text-align: center;
+    position: relative;
+}
+
+/* Animated Glow Logo */
+.logo-img {
+    height:90px;
+    border-radius:12px;
+    animation: glow 2.2s infinite ease-in-out;
+}
+@keyframes glow {
+    0% {filter: drop-shadow(0 0 2px gold);}
+    50% {filter: drop-shadow(0 0 15px gold);}
+    100% {filter: drop-shadow(0 0 2px gold);}
+}
+
+/* Success Icon */
+.success-icon {
+    font-size: 60px;
+    color: gold;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+@keyframes pulse {
+    0% {transform: scale(1);}
+    50% {transform: scale(1.15);}
+    100% {transform: scale(1);}
+}
+
+/* Button */
+.btn-gold {
+    background: linear-gradient(90deg, #cfa842, #a87a1b);
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: .3s;
+}
+.btn-gold:hover {
+    background: linear-gradient(90deg, #ffce50, #b98a1d);
+    transform: translateY(-2px);
+}
+
+/* Confetti */
+.confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: gold;
+    top: -10px;
+    opacity: 0.8;
+    animation: fall 3s linear infinite;
+}
+@keyframes fall {
+    0% {transform: translateY(0) rotate(0deg);}
+    100% {transform: translateY(600px) rotate(360deg);}
+}
+</style>
+
+<div class="success-page">
+<div class="success-card">
+
+    <img src="{% static 'images/hifas_logo.png' %}" class="logo-img mb-3" alt="Hifas Jewellery">
+    <div class="success-icon">✅</div>
+    <h3 class="text-light fw-bold mt-3">Password Reset Successful</h3>
+    <p style="color:#d9b76e;">You can now log in with your new password.</p>
+
+    <a href="{% url 'login' %}" class="btn-gold mt-3 d-inline-block">Back to Login</a>
+
+    <!-- Confetti Elements -->
+    <div id="confetti-container"></div>
+
+</div>
+</div>
+
+<script>
+// Generate confetti dynamically
+const container = document.getElementById('confetti-container');
+for(let i=0; i<25; i++){
+    let c = document.createElement('div');
+    c.classList.add('confetti');
+    c.style.left = Math.random() * 100 + '%';
+    c.style.animationDelay = Math.random() * 3 + 's';
+    c.style.background = ['#ffd700','#ffec8b','#fff2cc','#f9d71c'][Math.floor(Math.random()*4)];
+    container.appendChild(c);
+}
+</script>
+{% endblock %}

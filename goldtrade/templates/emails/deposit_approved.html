@@ -1,0 +1,16 @@
+{% extends "emails/base_email.html" %}
+{% block content %}
+<h3>Deposit Approved 💎</h3>
+<p>Hi {{ username }},</p>
+<p>Your bank deposit has been <strong>approved</strong> and credited to your wallet.</p>
+
+<p>
+  <b>Amount:</b> Rs. {{ amount|floatformat:2 }}<br>
+  <b>Reference No:</b> {{ reference_no }}<br>
+  <b>Date:</b> {{ date }}
+</p>
+
+<a href="{{ site_url }}/my-deposits/" class="btn">View Deposits</a>
+
+<p>— Team Hifas Jewellery</p>
+{% endblock %}

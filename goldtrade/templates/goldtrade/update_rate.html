@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="fw-bold mb-4 text-center">⚙️ Update Gold Rate</h2>
+
+    {% if messages %}
+    <div class="col-md-6 mx-auto">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm border-0 col-md-6 mx-auto">
+        <div class="card-body">
+            <form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Buy Rate:</label>
+        <input type="number" step="0.01" name="buy_rate" class="form-control" value="{{ buy_rate }}" required>
+        <small class="text-muted">Current: <strong>{{ buy_rate|intcomma }} LKR</strong></small>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Sell Rate:</label>
+        <input type="number" step="0.01" name="sell_rate" class="form-control" value="{{ sell_rate }}" required>
+        <small class="text-muted">Current: <strong>{{ sell_rate|intcomma }} LKR</strong></small>
+    </div>
+
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">💾 Save Rate</button>
+    </div>
+</form>
+<form method="POST" onsubmit="return confirm('⚠️ Are you sure you want to update the gold rate?');">
+
+{% if last_updated %}
+<p class="text-muted mt-3 text-center">Last updated: {{ last_updated|date:"M d, Y H:i A" }}</p>
+{% endif %}
+
+<p id="rate-diff" class="text-center mt-2 fw-semibold text-success"></p>
+
+<script>
+document.querySelectorAll('input[type=number]').forEach(i=>{
+  i.addEventListener('input',()=>{ i.value=i.value.replace(/,/g,''); });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const buyInput = document.querySelector("[name='buy_rate']");
+  const sellInput = document.querySelector("[name='sell_rate']");
+  const diffDisplay = document.getElementById("rate-diff");
+
+  const updateDiff = () => {
+    const buy = parseFloat(buyInput.value || 0);
+    const sell = parseFloat(sellInput.value || 0);
+    const diff = sell - buy;
+    diffDisplay.innerText = diff > 0 ? `Spread: Rs. ${diff.toLocaleString()} /g` : "";
+  };
+
+  buyInput.addEventListener("input", updateDiff);
+  sellInput.addEventListener("input", updateDiff);
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const lastUpdatedText = document.querySelector("p.text-muted.mt-3.text-center");
+  if (!lastUpdatedText) return;
+
+  const baseTime = new Date("{{ last_updated|date:'c' }}"); // ISO timestamp
+  const updateAgo = () => {
+    const now = new Date();
+    const diff = Math.floor((now - baseTime) / 60000);
+    lastUpdatedText.innerText = diff < 1
+      ? "Last updated: just now ⏱️"
+      : `Last updated: ${diff} minute${diff !== 1 ? 's' : ''} ago ⏱️`;
+  };
+  updateAgo();
+  setInterval(updateAgo, 60000);
+});
+</script>
+
+{% endblock %}
+

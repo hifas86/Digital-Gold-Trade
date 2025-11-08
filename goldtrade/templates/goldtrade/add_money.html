@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="container mt-4">
+    
+    <h2 class="text-center text-warning fw-bold mb-3">Deposit to Wallet (LKR)</h2>
+
+    <div class="card p-4 shadow-lg" style="background:#10192c; border:1px solid #d4af37;">
+        
+        <p class="text-light">Current Balance:
+            <b class="text-warning">
+                Rs. {{ wallet.cash_balance|floatformat:2|intcomma }}
+            </b>
+        </p>
+
+        <hr style="border-color:#d4af37;">
+
+        <h5 class="text-light">Bank Account Details</h5>
+        <p class="text-light small">
+            Bank: <b>Commercial Bank of Sri Lanka</b><br>
+            Account Name: <b>Hifas Jewellery Pvt Ltd</b><br>
+            Account Number: <b>123456789</b><br>
+            Branch: <b>Colombo Fort</b>
+        </p>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <label class="text-light">Deposit Amount (LKR)</label>
+            <input type="number" name="amount" step="0.01" class="form-control mb-2" required>
+
+            <label class="text-light">Bank Reference / Slip Number</label>
+            <input type="text" name="reference_no" class="form-control mb-2" required>
+
+            <label class="text-light">Upload Bank Slip</label>
+            <input type="file" name="slip" accept="image/*" class="form-control mb-3" required>
+
+            <button class="btn w-100 fw-bold"
+                    style="background:#d4af37;color:#000;">
+                ✅ Submit Deposit Request
+            </button>
+        </form>
+
+        <p class="text-secondary mt-2 text-center small">
+            ⏳ Wallet will be credited after admin verification
+        </p>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Withdraw Funds - Hifas Jewellery{% endblock %}
+{% block content %}
+
+<style>
+.gold-card {
+  background: linear-gradient(180deg, #0c1220, #131b2f);
+  border: 1px solid #d4af37;
+  border-radius: 14px;
+  padding: 30px;
+  color: gold;
+  box-shadow: 0 0 15px rgba(255,215,0,0.15);
+  max-width: 550px;
+  margin: auto;
+}
+.gold-input {
+  background: #10192c;
+  color: #fff;
+  border: 1px solid #d4af37;
+}
+.gold-input:focus {
+  box-shadow: 0 0 10px rgba(255,215,0,0.3);
+  border-color: gold;
+}
+.gold-btn {
+  background: linear-gradient(90deg, #d4af37, #b8852b);
+  border: none;
+  color: #0c1220;
+  font-weight: 700;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+.gold-btn:hover {
+  box-shadow: 0 0 20px rgba(255,215,0,0.5);
+  transform: scale(1.03);
+}
+.balance {
+  color: #ffdd28;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+</style>
+
+<h3 class="text-light fw-bold mb-4 text-center">💸 Withdraw Funds</h3>
+
+<div class="gold-card">
+  <form method="POST">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label class="form-label text-light fw-semibold">Amount (LKR)</label>
+      <div class="input-group">
+        <input type="number" step="0.01" name="amount" id="withdrawAmount"
+               class="form-control form-control-lg gold-input" placeholder="Enter amount" required>
+        <button type="button" id="fillAll" class="btn btn-outline-warning fw-bold">
+          Withdraw All
+        </button>
+      </div>
+    </div>
+
+    <hr class="border-warning my-4">
+
+    <h5 class="text-warning mb-3">🏦 Bank Details</h5>
+
+    <div class="mb-3">
+      <label class="form-label text-light">Bank Name</label>
+      <input type="text" name="bank_name" class="form-control gold-input" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-light">Branch</label>
+      <input type="text" name="branch" class="form-control gold-input" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-light">Account Holder Name</label>
+      <input type="text" name="account_name" class="form-control gold-input" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label text-light">Account Number</label>
+      <input type="text" name="account_number" class="form-control gold-input" required>
+    </div>
+
+    <button type="submit" class="gold-btn w-100 py-2 mt-3">
+      Confirm Withdraw
+    </button>
+  </form>
+
+  <hr class="border-warning my-4">
+
+  <div class="d-flex justify-content-between">
+    <span class="text-light">💰 Available Balance:</span>
+    <span class="balance">Rs. {{ wallet.cash_balance|floatformat:2|intcomma }}</span>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const fillAllBtn = document.getElementById("fillAll");
+    const input = document.getElementById("withdrawAmount");
+    const available = {{ wallet.cash_balance|floatformat:2 }};
+    fillAllBtn.addEventListener("click", () => {
+      input.value = available.toFixed(2);
+    });
+  });
+</script>
+
+{% endblock %}

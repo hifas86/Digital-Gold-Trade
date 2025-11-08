@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+{% block title %}Dashboard - Hifas Jewellery{% endblock %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+.gold-ticker{
+    background:linear-gradient(90deg,#d4af37,#b0852a);
+    padding:6px;color:#fff;font-weight:bold;
+    border-radius:6px;overflow:hidden;white-space:nowrap;
+}
+.gold-ticker p{
+    display:inline-block;animation:scroll 12s linear infinite;margin:0;
+}
+@keyframes scroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+
+.gold-card{
+    background:#10192c;border:1px solid #d4af37;color:gold;
+    border-radius:12px;padding:20px;transition:.3s;
+    box-shadow:0 0 10px rgba(255,215,0,0.15);
+}
+.gold-card:hover{
+    transform:scale(1.03);box-shadow:0 0 20px rgba(255,215,0,0.4);
+}
+.count-number{font-size:32px;font-weight:700;color:#ffdd28;}
+canvas {
+  background-color: #0d1221;
+  border-radius: 8px;
+}
+
+
+</style>
+
+<div class="gold-ticker mb-3">
+    <p>📈 Digital Gold Live | Buy: Rs. {{ buy_rate|intcomma }} /g | Sell: Rs. {{ sell_rate|intcomma }} /g | Hifas Jewellery ✨</p>
+</div>
+
+<h3 class="text-light fw-bold mb-4">🏆 Digital Gold Dashboard</h3>
+
+<div class="d-flex gap-2 mt-3">
+    <a href="{% url 'add_money' %}" class="btn btn-success w-100">Deposit LKR</a>
+    <a href="{% url 'withdraw_money' %}" class="btn btn-warning w-100">Withdraw</a>
+</div>
+<br>
+
+<div class="row">
+  <div class="col-md-6 mb-3">
+    <div class="gold-card text-center">
+      <h5 class="fw-bold">💰 Cash Balance (LKR)</h5>
+      <div class="count-number" id="cash">Rs. {{ selected_wallet.cash_balance|floatformat:2|intcomma }}</div>
+    </div>
+  </div>
+
+  <div class="col-md-6 mb-3">
+    <div class="gold-card text-center">
+      <h5 class="fw-bold">🏅 Gold Holdings (g)</h5>
+      <div class="count-number" id="gold">{{ selected_wallet.gold_balance|floatformat:4 }} g</div>
+    </div>
+  </div>
+</div>
+
+
+<div class="card mt-4">
+    <div class="card-header fw-bold">📈 Gold Price (30 Days)</div>
+    <div class="card-body">
+        <canvas id="goldPriceChart" height="120"></canvas>
+    </div>
+</div>
+
+<!-- 🟣 Demo Transactions -->
+<div class="card mt-4">
+    <div class="card-header fw-bold">💎 Demo Wallet Transactions</div>
+    <div class="card-body">
+        {% if demo_transactions %}
+            <ul class="list-group">
+                {% for t in demo_transactions %}
+                <li class="list-group-item">
+                    {{ t.transaction_type|title }} — {{ t.gold_amount }} g — Rs. {{ t.total_amount|floatformat:2|intcomma }}
+                    <br><small>{{ t.timestamp }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No demo transactions yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 🟡 Real Transactions -->
+<div class="card mt-4 mb-5">
+    <div class="card-header fw-bold">💰 Real Wallet Transactions</div>
+    <div class="card-body">
+        {% if real_transactions %}
+            <ul class="list-group">
+                {% for t in real_transactions %}
+                <li class="list-group-item">
+                    {{ t.transaction_type|title }} — {{ t.gold_amount }} g — Rs. {{ t.total_amount|floatformat:2|intcomma }}
+                    <br><small>{{ t.timestamp }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No real wallet transactions yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+let goldChart = null;
+
+function loadGoldChart() {
+  fetch("{% url 'gold_history' %}")
+    .then(r => r.json())
+    .then(data => {
+      // Convert UTC timestamps → local viewer times
+      const localLabels = data.timestamps.map(t => {
+        const d = new Date(t);
+        return d.toLocaleString(undefined, {
+          month: 'short',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        });
+      });
+
+      const ctx = document.getElementById("goldPriceChart").getContext("2d");
+      if (goldChart) goldChart.destroy();
+
+      goldChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: localLabels,
+          datasets: [
+            {
+              label: "Buy Rate (Rs/g)",
+              data: data.buy_rates,
+              borderColor: "rgb(0, 255, 102)",
+              backgroundColor: "rgba(0, 255, 102, 0.15)",
+              borderWidth: 3,
+              tension: 0.35,
+              fill: true,
+              pointRadius: 3,
+            },
+            {
+              label: "Sell Rate (Rs/g)",
+              data: data.sell_rates,
+              borderColor: "rgb(255, 99, 132)",
+              backgroundColor: "rgba(255, 99, 132, 0.15)",
+              borderWidth: 3,
+              tension: 0.35,
+              fill: true,
+              pointRadius: 3,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              ticks: {
+                color: "#FFD700",
+                autoSkip: true,  // 👈 auto-skip overlapping labels
+                maxRotation: 45,
+                minRotation: 0,
+              },
+              grid: { color: "rgba(255,255,255,0.1)" }
+            },
+            y: {
+              ticks: {
+                color: "#FFD700",
+                callback: (v) => "Rs. " + v.toLocaleString("en-LK")
+              },
+              grid: { color: "rgba(255,255,255,0.1)" }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { color: "#fff", font: { size: 12 } }
+            },
+            tooltip: {
+              callbacks: {
+                title: (items) => {
+                  const idx = items[0].dataIndex;
+                  const utcDate = new Date(data.timestamps[idx]);
+                  return utcDate.toLocaleString(undefined, {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                  });
+                },
+                label: (context) => {
+                  return `${context.dataset.label}: Rs. ${context.raw.toLocaleString("en-LK", { minimumFractionDigits: 2 })}`;
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+}
+
+loadGoldChart();
+setInterval(loadGoldChart, 30000);
+</script>
+
+{% endblock %}

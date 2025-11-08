@@ -1,0 +1,244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Digital Gold Trade - Hifas Jewellery{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+/* ✅ NAVBAR */
+.gold-navbar {
+    background: linear-gradient(90deg, #f0c14b, #e2b027);
+    color: #4a3809;
+    font-weight: 600;
+    padding: 10px 25px;
+    border-bottom: 2px solid #d1aa22;
+    box-shadow: 0 2px 10px rgba(193,157,43,0.25);
+}
+
+/* ✅ SIDEBAR */
+.sidebar {
+    height: 100vh;
+    background: linear-gradient(180deg, #f8d879, #f0c14b);
+    padding-top: 20px;
+    min-width: 230px;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+    color: #3b2b09;
+    font-weight: 600;
+    padding: 12px 20px;
+    text-decoration: none;
+    border-left: 4px solid transparent;
+    font-size: 15px;
+    transition: 0.25s;
+}
+.sidebar a:hover, .sidebar a.active {
+    background: linear-gradient(90deg, rgba(255,225,130,.9), rgba(224,186,35,1));
+    color: white;
+    border-left: 4px solid #c9a743;
+    transform: translateX(4px);
+}
+
+/* ✅ PAGE BACKGROUND */
+body {
+    background: #0d1323;
+    color: white;
+}
+
+/* ✅ GOLD GLOW */
+#gold-ticker {
+    animation: goldGlow 2s infinite alternate;
+}
+@keyframes goldGlow {
+    0% { box-shadow: 0 0 4px rgba(255,215,0,0.4); }
+    100% { box-shadow: 0 0 12px rgba(255,195,0,0.9); }
+}
+
+/* 🌟 Premium Animated Luxury Background */
+body {
+    background: radial-gradient(circle at top, #1a2337, #0b0f1c);
+    color: white;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ✨ Soft moving gold shine */
+.gold-shimmer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,215,0,0.08) 0%, rgba(0,0,0,0) 70%);
+    animation: shimmerMove 18s infinite linear;
+    z-index: -1;
+}
+
+@keyframes shimmerMove {
+    0% { transform: translate(-20%, -20%) rotate(0deg); }
+    50% { transform: translate(20%, 20%) rotate(180deg); }
+    100% { transform: translate(-20%, -20%) rotate(360deg); }
+}
+
+/* Subtle floating particles 💫 */
+.gold-dots {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+    background:
+        radial-gradient(circle 2px, rgba(255,215,0,.2) 40%, transparent 41%) 10% 20%,
+        radial-gradient(circle 2px, rgba(255,215,0,.25) 40%, transparent 41%) 50% 80%,
+        radial-gradient(circle 2px, rgba(255,215,0,.15) 40%, transparent 41%) 90% 30%,
+        radial-gradient(circle 3px, rgba(255,215,0,.3) 40%, transparent 41%) 30% 50%;
+    background-size: 150px 150px;
+    animation: dotsFloat 10s infinite alternate ease-in-out;
+}
+
+@keyframes dotsFloat {
+    0% { transform: translateY(0) }
+    100% { transform: translateY(-13px) }
+}
+
+.wallet-switch-btn {
+    background: #1a2333;
+    border: 1px solid #d4af37;
+    color: gold;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: .25s;
+}
+
+.wallet-switch-btn:hover {
+    background: #2b3550;
+    box-shadow: 0 0 8px rgba(212,175,55,0.6);
+}
+.badge {
+    animation: fadeIn .3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(.8);}
+    to { opacity: 1; transform: scale(1);}
+}
+
+
+
+</style>
+</head>
+
+<body>
+<div class="gold-shimmer"></div>
+<div class="gold-dots"></div>
+
+{% if user.is_authenticated %}
+<div class="gold-navbar d-flex justify-content-between align-items-center">
+
+    <div class="d-flex align-items-center">
+        <img src="{% static 'images/hifas_logo.png' %}" 
+            alt="Hifas Jewellery"
+            style="height:42px; margin-right:10px; border-radius:5px;">
+        <div class="fw-bold">
+            Digital Gold Trade<br>
+            <small style="font-size:13px; color:#4a3809;">Hifas Jewellery</small>
+        </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+
+        <!-- ✅ Gold Price Ticker -->
+        <div id="gold-ticker"
+             class="px-3 py-1 fw-bold"
+             style="background:#fff8d9; border-radius:6px; border:1px solid #d4b342; font-size:14px;">
+            ⏳ Loading Gold Prices...
+        </div>
+
+<!-- Wallet Switch -->
+<div class="dropdown">
+  <button class="btn wallet-switch-btn dropdown-toggle d-flex align-items-center px-3 py-2"
+          data-bs-toggle="dropdown"
+          style="border-radius:8px;">
+
+    {% if is_demo %}
+      🧪 <span class="badge bg-warning text-dark ms-2">Demo Wallet</span>
+    {% else %}
+      💳 <span class="badge bg-success ms-2">Real Wallet</span>
+    {% endif %}
+  </button>
+
+  <ul class="dropdown-menu dropdown-menu-end">
+      <li><a class="dropdown-item" href="{% url 'switch_wallet' 'real' %}?next={{ request.path }}">💳 Real Wallet</a></li>
+      <li><a class="dropdown-item" href="{% url 'switch_wallet' 'demo' %}?next={{ request.path }}">🧪 Demo Wallet</a></li>
+  </ul>
+</div>
+
+
+<span class="gold-user ms-2">👑 {{ request.user.username|title }}</span>
+<a href="{% url 'logout' %}" class="ms-2 text-danger fw-bold">Logout</a>
+
+
+  
+    </div>
+
+</div>
+{% endif %}
+
+
+<!-- ✅ LAYOUT -->
+<div class="d-flex">
+
+{% if user.is_authenticated %}
+<div class="sidebar">
+    <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">🏠 Dashboard</a>
+    <a href="{% url 'buy_gold' %}" class="{% if request.resolver_match.url_name == 'buy_gold' %}active{% endif %}">💰 Buy Gold</a>
+    <a href="{% url 'sell_gold' %}" class="{% if request.resolver_match.url_name == 'sell_gold' %}active{% endif %}">💸 Sell Gold</a>
+    <a href="{% url 'transactions' %}" class="{% if request.resolver_match.url_name == 'transactions' %}active{% endif %}">📜 Transactions</a>
+    <a href="{% url 'reports' %}" class="{% if request.resolver_match.url_name == 'reports' %}active{% endif %}">📊 Reports</a>
+    <a href="{% url 'add_money' %}" class="{% if request.resolver_match.url_name == 'add_money' %}active{% endif %}">💵 Add Money</a>
+   <a href="{% url 'my_deposits' %}" class="{% if request.resolver_match.url_name == 'my_deposits' %}active{% endif %}">🏦 My Deposits</a>
+
+{% if request.user.is_staff %}
+    <a href="{% url 'update_rate' %}" class="{% if request.resolver_match.url_name == 'update_rate' %}active{% endif %}">⚙️ Update Rate</a>
+  <a href="{% url 'staff_deposits' %}" class="{% if request.resolver_match.url_name == 'staff_deposits' %}active{% endif %}">🛡️ Staff Deposits</a>
+{% endif %}
+
+
+</div>
+{% endif %}
+
+<div class="content flex-grow-1 p-4">
+    {% block content %}{% endblock %}
+</div>
+
+</div>
+
+<script>
+function fetchGoldRates() {
+    fetch("{% url 'refresh_rates' %}")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("gold-ticker").innerHTML =
+                `🟡 Buy: <span style="color:green">${data.buy_rate.toLocaleString()}</span> | 
+                 🔴 Sell: <span style="color:red">${data.sell_rate.toLocaleString()}</span>`;
+        })
+        .catch(() => {
+            document.getElementById("gold-ticker").innerHTML = "⚠️ Price Update Error";
+        });
+}
+fetchGoldRates();
+setInterval(fetchGoldRates, 10000);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+</html>

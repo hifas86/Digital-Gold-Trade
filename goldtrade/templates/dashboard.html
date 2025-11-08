@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Digital Gold Trade{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">📊 Dashboard - Hifas Jewellery</h2>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center p-3 bg-dark text-warning">
+            <h5>💰 Total Gold Bought</h5>
+            <h3>{{ total_buy }}g</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3 bg-dark text-danger">
+            <h5>💸 Total Gold Sold</h5>
+            <h3>{{ total_sell }}g</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3 bg-dark text-info">
+            <h5>🏦 Current Balance</h5>
+            <h3>{{ gold_balance }}g</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Chart -->
+<div class="card p-3 bg-dark">
+    <h5 class="text-warning">📈 Gold Price Trend</h5>
+    <canvas id="goldChart" height="120"></canvas>
+</div>
+
+<!-- Chart JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+fetch("{% url 'gold_history' %}")
+.then(res => res.json())
+.then(data => {
+    const labels = data.map(x => x.date);
+    const buy = data.map(x => x.buy);
+    const sell = data.map(x => x.sell);
+
+    new Chart(document.getElementById("goldChart"), {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [
+                { label: "Buy Price", data: buy, borderWidth: 2, borderColor: "gold" },
+                { label: "Sell Price", data: sell, borderWidth: 2, borderColor: "red" }
+            ]
+        },
+        options: { responsive: true }
+    });
+});
+</script>
+
+{% endblock %}

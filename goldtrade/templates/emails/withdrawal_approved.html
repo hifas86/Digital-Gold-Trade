@@ -1,0 +1,18 @@
+{% extends "emails/base_email.html" %}
+{% block content %}
+<h3>Withdrawal Approved ✅</h3>
+<p>Hi {{ username }},</p>
+<p>Your withdrawal request has been <strong>approved</strong>.</p>
+
+<p>
+  <b>Amount:</b> Rs. {{ amount|floatformat:2 }}<br>
+  <b>Bank:</b> {{ bank_details }}<br>
+  <b>Requested on:</b> {{ date }}
+</p>
+
+<p>Funds will be transferred to your bank shortly.</p>
+
+<a href="{{ site_url }}/transactions/" class="btn">View Transaction</a>
+
+<p>Thank you for choosing <strong>Hifas Jewellery</strong>.</p>
+{% endblock %}

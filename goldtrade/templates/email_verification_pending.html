@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Verify Your Email | Digital Gold Trade{% endblock %}
+
+{% block content %}
+<style>
+.verify-pending-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top, #1b2439, #0d1221);
+    animation: bgMove 7s infinite alternate ease-in-out;
+    overflow: hidden;
+}
+@keyframes bgMove {
+    0% {background-position: 0 0;}
+    100% {background-position: 100% 100%;}
+}
+
+/* Card styling */
+.verify-card {
+    width: 440px;
+    background: rgba(255,255,255,0.1);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 25px rgba(255,215,0,0.15);
+    border: 1px solid rgba(255,215,0,0.3);
+    text-align: center;
+    position: relative;
+}
+
+/* Glowing logo */
+.logo-img {
+    height:90px;
+    border-radius:12px;
+    animation: glow 2.2s infinite ease-in-out;
+}
+@keyframes glow {
+    0% {filter: drop-shadow(0 0 2px gold);}
+    50% {filter: drop-shadow(0 0 15px gold);}
+    100% {filter: drop-shadow(0 0 2px gold);}
+}
+
+/* Timer */
+.countdown {
+    font-size: 20px;
+    color: gold;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+/* Button */
+.btn-gold {
+    background: linear-gradient(90deg, #cfa842, #a87a1b);
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: .3s;
+}
+.btn-gold:hover {
+    background: linear-gradient(90deg, #ffce50, #b98a1d);
+    transform: translateY(-2px);
+}
+
+/* Disable button */
+.btn-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Sparkle background */
+.sparkle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: gold;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: sparkleMove 4s linear infinite;
+}
+@keyframes sparkleMove {
+    0% {transform: translateY(0) rotate(0deg);}
+    100% {transform: translateY(600px) rotate(360deg);}
+}
+</style>
+
+<div class="verify-pending-page">
+<div class="verify-card">
+
+    <img src="{% static 'images/hifas_logo.png' %}" class="logo-img mb-3" alt="Hifas Jewellery">
+
+    <h3 class="text-light fw-bold mt-2">Verify Your Email</h3>
+{% for message in messages %}
+  <div class="alert alert-success mt-2">{{ message }}</div>
+{% endfor %}
+
+    <p style="color:#d9b76e;">We’ve sent a verification link to your registered email.<br>
+    Please check your inbox and verify your account.</p>
+
+    <div class="countdown">You can resend email in <span id="timer">30</span> seconds</div>
+
+<form action="{% url 'resend_verification' %}" method="POST" id="resendForm">
+    {% csrf_token %}
+    <button type="submit" id="resendBtn" class="btn-gold btn-disabled">
+        Resend Verification Email
+    </button>
+</form>
+
+
+    <p class="text-light mt-3 mb-0">
+        Didn’t get the email? Check your spam folder.
+    </p>
+
+    <div id="sparkle-container"></div>
+</div>
+</div>
+
+<script>
+// Sparkles ✨
+const container = document.getElementById('sparkle-container');
+for(let i=0; i<20; i++){
+    let s = document.createElement('div');
+    s.classList.add('sparkle');
+    s.style.left = Math.random() * 100 + '%';
+    s.style.animationDelay = Math.random() * 4 + 's';
+    container.appendChild(s);
+}
+
+// Countdown Timer
+let timeLeft = 30;
+const timer = document.getElementById("timer");
+const resendBtn = document.getElementById("resendBtn");
+
+const interval = setInterval(() => {
+    timeLeft--;
+    timer.textContent = timeLeft;
+if (timeLeft <= 0) {
+    clearInterval(interval);
+    resendBtn.classList.remove("btn-disabled");
+    resendBtn.disabled = false;
+    resendBtn.innerText = "🔁 Resend Verification Email";
+    timer.textContent = "0";
+}
+
+}, 1000);
+</script>
+{% endblock %}
